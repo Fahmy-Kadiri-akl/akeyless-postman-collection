@@ -31,18 +31,33 @@ This collection moves that work into one importable file.
 
 ## Quick start
 
+Every request authenticates with a session token held in the `{{token}}`
+variable. How you obtain that token depends on your auth method.
+
 1. Import `akeyless-api.postman_collection.json` into Postman: **Import** then
    select the file.
-2. Open the collection's **Variables** tab and set:
-   - `base_url`: `https://api.akeyless.io` for SaaS, or
-     `https://<your-gateway-host>:8000/api/v2` for a gateway.
-   - `access_id`: your auth method access ID, for example `p-abcd1234`.
-   - `access_key`: the API key for that access ID.
-3. Run **Auth & Auth Methods > auth** once. Its test script writes the returned
-   token to the `{{token}}` collection variable.
+2. Open the collection's **Variables** tab and set `base_url`:
+   `https://api.akeyless.io` for SaaS, or
+   `https://<your-gateway-host>:8000/api/v2` for a gateway.
+3. Set `{{token}}`. Pick the path that matches your auth method:
+
+   **Any auth method, including SAML, OIDC, LDAP, cert, and Kubernetes**
+   (recommended): get a token out of band and paste it into `{{token}}`. From
+   the CLI, `akeyless auth` prints a token (`t-...`); for SAML or OIDC it opens
+   a browser to complete sign-in. You can also copy a token from the Akeyless
+   web console. This path works for every auth method, including API key.
+
+   **API key only** (convenience): set `access_id` and `access_key`, then run
+   **Auth & Auth Methods > auth**. Its test script writes the returned token to
+   `{{token}}` for you.
 4. Run any other request. Each one passes `{{token}}` in its body
-   automatically. The token expires after roughly 60 minutes; re-run `auth` to
-   refresh it.
+   automatically. Tokens expire after roughly 60 minutes; paste a fresh one or
+   re-run `auth` to refresh.
+
+Why a token and not always access_id/access_key: only the `api_key` auth method
+uses a static access key. SAML, OIDC, LDAP, cert, and Kubernetes auth produce a
+token through a sign-in or platform handshake, so the portable input across all
+methods is the token itself.
 
 ## What is in the collection
 
@@ -99,11 +114,17 @@ Fields:
 ## Authentication model
 
 Akeyless authenticates per request by carrying the session token in the JSON
-body field `token`, not in an `Authorization` header. The `auth` request logs
-in with `access_id` and `access_key` and returns a token; its test script
-stores that token in `{{token}}`; and every other request references
-`{{token}}` in its body. This is why you run `auth` first and never touch the
-token by hand.
+body field `token`, not in an `Authorization` header. Every request in this
+collection references `{{token}}`, so the only thing you manage is that one
+variable.
+
+How the token is produced depends on the auth method. The `api_key` method
+exchanges a static `access_id` and `access_key` for a token, which the `auth`
+request automates. SAML and OIDC complete a browser sign-in; LDAP exchanges
+user credentials; cert and Kubernetes auth perform a platform handshake. All of
+them yield a token, which is why `{{token}}` is the portable input the
+collection is built around. The `auth` request is a convenience for the
+`api_key` case, not the only way in.
 
 ## Public SaaS versus Gateway
 
