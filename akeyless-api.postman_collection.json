@@ -1,16 +1,16 @@
 {
   "info": {
     "name": "Akeyless API - Full Collection (v5)",
-    "description": "Complete Akeyless API collection: all 622 operations, generated from the official OpenAPI spec (akeylesslabs/akeyless-go, branch v5).\n\n## Setup\nEvery request authenticates with a session token in the `{{token}}` variable. Populate it one of two ways:\n- **Any auth method (SAML, OIDC, LDAP, cert, Kubernetes, API key):** obtain a token out of band and paste it into `{{token}}`. From the CLI: `akeyless auth` prints a token (t-...). Or copy one from the web console. Then set `base_url` and run any request.\n- **API key only (convenience):** set `access_id` and `access_key`, then run **Auth & Auth Methods > auth**; its test script fills `{{token}}`.\n\nTokens expire after ~60 minutes; paste a fresh one or re-run `auth`.\n\n## Base URL\n- Public SaaS: `https://api.akeyless.io`\n- Gateway: `https://<your-gateway-host>:8000/api/v2`\n\n## Conventions\n- Requests marked **[W]** are mutating (create/update/delete/set/rotate).\n- Request bodies contain **required fields only**, as `<placeholders>`.\n- Each request's **description documents every field** (required/optional, type, enum, default, and meaning) pulled from the spec.\n\n## Auth model\nEvery command authenticates by carrying the session token in the JSON body field `token`. There is no Authorization header.",
+    "description": "Complete Akeyless API collection: all 622 operations, generated from the official OpenAPI spec (akeylesslabs/akeyless-go, branch v5), plus 5 hand-authored auth examples for 627 requests total.\n\n## Setup\nEvery request authenticates with a session token in the `{{token}}` variable. Populate it one of two ways:\n- **Any auth method (SAML, OIDC, LDAP, cert, Kubernetes, API key):** obtain a token out of band and paste it into `{{token}}`. From the CLI: `akeyless auth` prints a token (t-...). Or copy one from the web console. Then set `base_url` and run any request.\n- **API key only (convenience):** set `access_id` and `access_key`, then run **Auth & Auth Methods > auth (api-key)**; its test script fills `{{token}}`.\n\nTokens expire after ~60 minutes; paste a fresh one or re-run `auth`.\n\n## Base URL\n- Public SaaS: `https://api.akeyless.io`\n- Gateway: `https://<your-gateway-host>:8000/api/v2` - the `/api/v2` suffix is REQUIRED for a Gateway; without it every request 404s.\n\n## Conventions\n- Requests marked **[W]** are mutating (create/update/delete/set/rotate).\n- Request bodies contain **required fields only**, as `<placeholders>`.\n- Each request's **description documents every field** (required/optional, type, enum, default, and meaning) pulled from the spec.\n\n## Auth model\nEvery command authenticates by carrying the session token in the JSON body field `token`. There is no Authorization header.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Auth & Auth Methods (62)",
+      "name": "Auth & Auth Methods (67)",
       "description": "Authenticate (run `auth` first to populate {{token}}) and manage auth methods. Most work on public SaaS.",
       "item": [
         {
-          "name": "auth",
+          "name": "auth (api-key)",
           "request": {
             "method": "POST",
             "header": [
@@ -21,7 +21,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"json\": true\n}",
+              "raw": "{\n  \"access-type\": \"access_key\",\n  \"access-id\": \"{{access_id}}\",\n  \"access-key\": \"{{access_key}}\",\n  \"json\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -37,7 +37,295 @@
                 "auth"
               ]
             },
-            "description": "## Authenticate to the service and returns a token to be used as a profile to execute the CLI without the need for re-authentication\n_Command description from the Akeyless CLI._\n\n`POST /auth`  -  read-only\nReference: https://docs.akeyless.io/reference/auth\n\nRequired: none\n\nFields:\n- `access-id` (optional, string): Access ID\n- `access-key` (optional, string): Access key (relevant only for access-type=access_key)\n- `access-type` (optional, string, default: access_key): Access Type (access_key/password/saml/ldap/k8s/azure_ad/oidc/aws_iam/universal_identity/jwt/gcp/cert/oci/kerberos)\n- `account-id` (optional, string): Account id (relevant only for access-type=password where the email address is associated with more than one account)\n- `admin-email` (optional, string): Email (relevant only for access-type=password)\n- `admin-password` (optional, string): Password (relevant only for access-type=password)\n- `azure-cloud` (optional, string, default: AzureCloud): Azure cloud environment to use. Values: AzureCloud (default), AzureUSGovernment, AzureChinaCloud.\n- `cert-challenge` (optional, string): Certificate challenge encoded in base64. (relevant only for access-type=cert)\n- `cert-data` (optional, string): Certificate data encoded in base64. Used if file was not provided. (relevant only for access-type=cert)\n- `cloud-id` (optional, string): The cloud identity (relevant only for access-type=azure_ad,aws_iam,gcp)\n- `debug` (optional, boolean)\n- `disable-pafxfast` (optional, string): Disable the FAST negotiation in the Kerberos authentication method\n- `gateway-spn` (optional, string): The service principal name of the gateway as registered in LDAP (i.e., HTTP/gateway)\n- `gateway-url` (optional, string): Gateway URL relevant only for access-type=k8s/oauth2/saml/oidc\n- `gcp-audience` (optional, string, default: akeyless.io): GCP JWT audience\n- `json` (optional, boolean, default: False): Set output format to JSON\n- `jwt` (optional, string): The Json Web Token (relevant only for access-type=jwt/oidc)\n- `k8s-auth-config-name` (optional, string): The K8S Auth config name (relevant only for access-type=k8s)\n- `k8s-service-account-token` (optional, string): The K8S service account token. (relevant only for access-type=k8s)\n- `kerberos-token` (optional, string): KerberosToken represents a Kerberos token generated for the gateway SPN (Service Principal Name).\n- `kerberos-username` (optional, string): TThe username for the entry within the keytab to authenticate via Kerberos\n- `key-data` (optional, string): Private key data encoded in base64. Used if file was not provided.(relevant only for access-type=cert)\n- `keytab-data` (optional, string): Base64-encoded content of a valid keytab file, containing the service account's entry.\n- `krb5-conf-data` (optional, string): Base64-encoded content of a valid krb5.conf file, specifying the settings and parameters required for Kerberos authentication.\n- `ldap-password` (optional, string): LDAP password (relevant only for access-type=ldap)\n- `oci-auth-type` (optional, string, default: apikey): The type of the OCI configuration to use [instance/apikey/resource] (relevant only for access-type=oci)\n- `oci-group-ocid` (optional, array): A list of Oracle Cloud IDs groups (relevant only for access-type=oci)\n- `otp` (optional, string)\n- `signed-cert-challenge` (optional, string): Signed certificate challenge encoded in base64. (relevant only for access-type=cert)\n- `uid-token` (optional, string): The universal_identity token (relevant only for access-type=universal_identity)\n- `use-remote-browser` (optional, boolean): Returns a link to complete the authentication remotely (relevant only for access-type=saml/oidc)\n- `username` (optional, string): LDAP username (relevant only for access-type=ldap)\n\n---\nThis request covers API-key auth (`access-type: api_key`). Set\n`access_id` and `access_key`, run it, and its test script stores the\ntoken in `{{token}}`.\n\nFor any other auth method (SAML, OIDC, LDAP, cert, Kubernetes, etc.) do\nNOT use this request. Obtain a token out of band and set the `{{token}}`\nvariable directly: run `akeyless auth` in the CLI, or copy a token from\nthe Akeyless web console. To drive a non-api-key method through this\nrequest instead, change `access-type` and supply that method's fields\n(for example `jwt` for OIDC/JWT, `cert-data`/`key-data` for cert,\n`k8s-auth-config-name` for Kubernetes)."
+            "description": "## Authenticate to the service and returns a token to be used as a profile to execute the CLI without the need for re-authentication\n_Command description from the Akeyless CLI._\n\n`POST /auth`  -  read-only\nReference: https://docs.akeyless.io/reference/auth\n\nRequired: none\n\nFields:\n- `access-id` (optional, string): Access ID\n- `access-key` (optional, string): Access key (relevant only for access-type=access_key)\n- `access-type` (optional, string, default: access_key): Access Type (access_key/password/saml/ldap/k8s/azure_ad/oidc/aws_iam/universal_identity/jwt/gcp/cert/oci/kerberos)\n- `account-id` (optional, string): Account id (relevant only for access-type=password where the email address is associated with more than one account)\n- `admin-email` (optional, string): Email (relevant only for access-type=password)\n- `admin-password` (optional, string): Password (relevant only for access-type=password)\n- `azure-cloud` (optional, string, default: AzureCloud): Azure cloud environment to use. Values: AzureCloud (default), AzureUSGovernment, AzureChinaCloud.\n- `cert-challenge` (optional, string): Certificate challenge encoded in base64. (relevant only for access-type=cert)\n- `cert-data` (optional, string): Certificate data encoded in base64. Used if file was not provided. (relevant only for access-type=cert)\n- `cloud-id` (optional, string): The cloud identity (relevant only for access-type=azure_ad,aws_iam,gcp)\n- `debug` (optional, boolean)\n- `disable-pafxfast` (optional, string): Disable the FAST negotiation in the Kerberos authentication method\n- `gateway-spn` (optional, string): The service principal name of the gateway as registered in LDAP (i.e., HTTP/gateway)\n- `gateway-url` (optional, string): Gateway URL relevant only for access-type=k8s/oauth2/saml/oidc\n- `gcp-audience` (optional, string, default: akeyless.io): GCP JWT audience\n- `json` (optional, boolean, default: False): Set output format to JSON\n- `jwt` (optional, string): The Json Web Token (relevant only for access-type=jwt/oidc)\n- `k8s-auth-config-name` (optional, string): The K8S Auth config name (relevant only for access-type=k8s)\n- `k8s-service-account-token` (optional, string): The K8S service account token. (relevant only for access-type=k8s)\n- `kerberos-token` (optional, string): KerberosToken represents a Kerberos token generated for the gateway SPN (Service Principal Name).\n- `kerberos-username` (optional, string): TThe username for the entry within the keytab to authenticate via Kerberos\n- `key-data` (optional, string): Private key data encoded in base64. Used if file was not provided.(relevant only for access-type=cert)\n- `keytab-data` (optional, string): Base64-encoded content of a valid keytab file, containing the service account's entry.\n- `krb5-conf-data` (optional, string): Base64-encoded content of a valid krb5.conf file, specifying the settings and parameters required for Kerberos authentication.\n- `ldap-password` (optional, string): LDAP password (relevant only for access-type=ldap)\n- `oci-auth-type` (optional, string, default: apikey): The type of the OCI configuration to use [instance/apikey/resource] (relevant only for access-type=oci)\n- `oci-group-ocid` (optional, array): A list of Oracle Cloud IDs groups (relevant only for access-type=oci)\n- `otp` (optional, string)\n- `signed-cert-challenge` (optional, string): Signed certificate challenge encoded in base64. (relevant only for access-type=cert)\n- `uid-token` (optional, string): The universal_identity token (relevant only for access-type=universal_identity)\n- `use-remote-browser` (optional, boolean): Returns a link to complete the authentication remotely (relevant only for access-type=saml/oidc)\n- `username` (optional, string): LDAP username (relevant only for access-type=ldap)\n\n---\nThis request covers API-key auth (`access-type: access_key`). Set\n`access_id` and `access_key`, run it, and its test script stores the\ntoken in `{{token}}`.\n\nFor any other auth method (SAML, OIDC, LDAP, cert, Kubernetes, etc.) do\nNOT use this request. Obtain a token out of band and set the `{{token}}`\nvariable directly: run `akeyless auth` in the CLI, or copy a token from\nthe Akeyless web console. To drive a non-api-key method through this\nrequest instead, change `access-type` and supply that method's fields\n(for example `jwt` for OIDC/JWT, `cert-data`/`key-data` for cert,\n`k8s-auth-config-name` for Kubernetes)."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    pm.test('Token captured', () => pm.expect(res.token).to.be.a('string'));",
+                  "} else {",
+                  "    pm.test('Token captured', () => pm.expect.fail('No token: ' + pm.response.text()));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "auth (universal-identity)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access-type\": \"universal_identity\",\n  \"access-id\": \"{{access_id}}\",\n  \"uid-token\": \"{{uid_token}}\",\n  \"json\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "Authenticate with Universal Identity (access-type=universal_identity). Set access_id to this method's Access ID and uid_token to a current, unexpired u-token (u-...). Its TTL defaults to 60 minutes and is configurable; a u-token does not auto-rotate, so rotate it before expiry with uid-rotate-token or an auto-rotate script. On success the test script stores the session token in {{token}}."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    pm.test('Token captured', () => pm.expect(res.token).to.be.a('string'));",
+                  "} else {",
+                  "    pm.test('Token captured', () => pm.expect.fail('No token: ' + pm.response.text()));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "auth (jwt / OIDC)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access-type\": \"jwt\",\n  \"access-id\": \"{{access_id}}\",\n  \"jwt\": \"{{jwt}}\",\n  \"json\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "Authenticate with a JWT / OIDC ID token (access-type=jwt). Set access_id to the JWT auth method's Access ID and jwt to a raw compact JWT that the method trusts, for example an OIDC ID token from your identity provider. This same shape covers OIDC-via-JWT. The interactive browser OIDC/SAML flow is not this request: for those, obtain a token out of band and set {{token}} directly."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    pm.test('Token captured', () => pm.expect(res.token).to.be.a('string'));",
+                  "} else {",
+                  "    pm.test('Token captured', () => pm.expect.fail('No token: ' + pm.response.text()));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "auth (cert)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access-type\": \"cert\",\n  \"access-id\": \"{{access_id}}\",\n  \"cert-data\": \"{{cert_data}}\",\n  \"key-data\": \"{{key_data}}\",\n  \"json\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "Authenticate with a client certificate (access-type=cert), direct mode. Set access_id to the Cert auth method's Access ID, cert_data to the base64-encoded client certificate PEM, and key_data to the base64-encoded matching private key PEM. This direct flow sends the key; the alternative challenge flow uses get-cert-challenge and validate-certificate-challenge instead and keeps the key local."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    pm.test('Token captured', () => pm.expect(res.token).to.be.a('string'));",
+                  "} else {",
+                  "    pm.test('Token captured', () => pm.expect.fail('No token: ' + pm.response.text()));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "auth (aws-iam)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access-type\": \"aws_iam\",\n  \"access-id\": \"{{access_id}}\",\n  \"cloud-id\": \"{{cloud_id}}\",\n  \"json\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "Authenticate with AWS IAM (access-type=aws_iam). Set access_id to the AWS IAM auth method's Access ID and provide aws_access_key_id, aws_secret_access_key, and aws_region (aws_session_token too if you use temporary or role credentials). The pre-request script signs an STS GetCallerIdentity call with SigV4 and writes the resulting cloud-id into cloud_id, which the body sends. Default region is us-east-1. This works only where the AWS identity is valid."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Build Akeyless aws_iam cloud-id from AWS creds: base64(JSON) wrapping a SigV4-signed STS GetCallerIdentity request.",
+                  "const accessKeyId = pm.variables.get('aws_access_key_id');",
+                  "const secretKey = pm.variables.get('aws_secret_access_key');",
+                  "const sessionToken = pm.variables.get('aws_session_token');",
+                  "const region = pm.variables.get('aws_region') || 'us-east-1';",
+                  "const host = 'sts.' + region + '.amazonaws.com';",
+                  "const endpoint = 'https://' + host + '/';",
+                  "const body = 'Action=GetCallerIdentity&Version=2011-06-15';",
+                  "function pad(n) { return ('0' + n).slice(-2); }",
+                  "const now = new Date();",
+                  "const amzDate = '' + now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + 'T' + pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + 'Z';",
+                  "const dateStamp = amzDate.slice(0, 8);",
+                  "const payloadHash = CryptoJS.SHA256(body).toString(CryptoJS.enc.Hex);",
+                  "let signedHeaders = 'content-type;host;x-amz-date';",
+                  "let canonicalHeaders = 'content-type:application/x-www-form-urlencoded\\n' + 'host:' + host + '\\n' + 'x-amz-date:' + amzDate + '\\n';",
+                  "if (sessionToken) {",
+                  "    canonicalHeaders = canonicalHeaders + 'x-amz-security-token:' + sessionToken + '\\n';",
+                  "    signedHeaders = signedHeaders + ';x-amz-security-token';",
+                  "}",
+                  "const canonicalRequest = ['POST', '/', '', canonicalHeaders, signedHeaders, payloadHash].join('\\n');",
+                  "const scope = dateStamp + '/' + region + '/sts/aws4_request';",
+                  "const stringToSign = ['AWS4-HMAC-SHA256', amzDate, scope, CryptoJS.SHA256(canonicalRequest).toString(CryptoJS.enc.Hex)].join('\\n');",
+                  "const kDate = CryptoJS.HmacSHA256(dateStamp, 'AWS4' + secretKey);",
+                  "const kRegion = CryptoJS.HmacSHA256(region, kDate);",
+                  "const kService = CryptoJS.HmacSHA256('sts', kRegion);",
+                  "const kSigning = CryptoJS.HmacSHA256('aws4_request', kService);",
+                  "const signature = CryptoJS.HmacSHA256(stringToSign, kSigning).toString(CryptoJS.enc.Hex);",
+                  "const authorization = 'AWS4-HMAC-SHA256 Credential=' + accessKeyId + '/' + scope + ', SignedHeaders=' + signedHeaders + ', Signature=' + signature;",
+                  "const headers = { 'Authorization': [authorization], 'Content-Type': ['application/x-www-form-urlencoded'], 'X-Amz-Date': [amzDate] };",
+                  "if (sessionToken) { headers['X-Amz-Security-Token'] = [sessionToken]; }",
+                  "function b64(s) { return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(s)); }",
+                  "const awsData = { sts_request_method: 'POST', sts_request_url: b64(endpoint), sts_request_body: b64(body), sts_request_headers: b64(JSON.stringify(headers)) };",
+                  "const cloudId = b64(JSON.stringify(awsData));",
+                  "pm.collectionVariables.set('cloud_id', cloudId);",
+                  "console.log('cloud_id generated for aws_iam auth');"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.token) {",
+                  "    pm.collectionVariables.set('token', res.token);",
+                  "    pm.test('Token captured', () => pm.expect(res.token).to.be.a('string'));",
+                  "} else {",
+                  "    pm.test('Token captured', () => pm.expect.fail('No token: ' + pm.response.text()));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "auth (k8s)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"access-type\": \"k8s\",\n  \"access-id\": \"{{access_id}}\",\n  \"k8s-service-account-token\": \"{{k8s_service_account_token}}\",\n  \"k8s-auth-config-name\": \"{{k8s_auth_config_name}}\",\n  \"gateway-url\": \"{{gateway_url}}\",\n  \"json\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/auth",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth"
+              ]
+            },
+            "description": "Authenticate with a Kubernetes service account (access-type=k8s). Set access_id to the K8s auth method's Access ID, k8s_service_account_token to the raw pod service account JWT, the contents of /var/run/secrets/kubernetes.io/serviceaccount/token, sent as-is and not base64-encoded, k8s_auth_config_name to the K8s auth config name defined on the Gateway, and gateway_url to the Gateway that holds that config and runs the TokenReview. A Gateway is required to validate the token; include gateway_url even when base_url already points at the Gateway."
           },
           "response": [],
           "event": [
@@ -20015,7 +20303,7 @@
     {
       "key": "base_url",
       "value": "https://api.akeyless.io",
-      "description": "API base. Public SaaS: https://api.akeyless.io | Gateway: https://<your-gateway-host>:8000/api/v2"
+      "description": "API base; every request is {{base_url}}/<command>. Public SaaS serves commands at the root: https://api.akeyless.io. A self-hosted Gateway serves the REST API under /api/v2, so set https://<your-gateway-host>:8000/api/v2. The /api/v2 suffix is REQUIRED for a Gateway; without it every request 404s, for example it resolves to /auth instead of /api/v2/auth."
     },
     {
       "key": "token",
@@ -20033,6 +20321,74 @@
       "value": "",
       "type": "secret",
       "description": "Optional. Only for the api-key `auth` request. API key for the access ID."
+    },
+    {
+      "key": "uid_token",
+      "value": "",
+      "type": "secret",
+      "description": "Universal Identity token (u-...), for the universal_identity auth request. Default TTL 60 minutes, configurable; does not auto-rotate."
+    },
+    {
+      "key": "jwt",
+      "value": "",
+      "type": "secret",
+      "description": "Raw JWT / OIDC ID token for the jwt auth request."
+    },
+    {
+      "key": "cert_data",
+      "value": "",
+      "description": "Base64-encoded client certificate PEM, for the cert auth request."
+    },
+    {
+      "key": "key_data",
+      "value": "",
+      "type": "secret",
+      "description": "Base64-encoded private key PEM, for the cert auth request."
+    },
+    {
+      "key": "aws_access_key_id",
+      "value": "",
+      "type": "secret",
+      "description": "AWS access key ID, for the aws-iam auth request."
+    },
+    {
+      "key": "aws_secret_access_key",
+      "value": "",
+      "type": "secret",
+      "description": "AWS secret access key, for the aws-iam auth request."
+    },
+    {
+      "key": "aws_session_token",
+      "value": "",
+      "type": "secret",
+      "description": "AWS session token, only for temporary or role credentials, for the aws-iam auth request."
+    },
+    {
+      "key": "aws_region",
+      "value": "us-east-1",
+      "description": "AWS region for the STS endpoint used by the aws-iam auth pre-request script. Default us-east-1."
+    },
+    {
+      "key": "cloud_id",
+      "value": "",
+      "type": "secret",
+      "description": "Computed by the aws-iam auth pre-request script from your AWS credentials. Do not set by hand."
+    },
+    {
+      "key": "k8s_service_account_token",
+      "value": "",
+      "type": "secret",
+      "description": "Raw Kubernetes service account JWT, not base64-encoded, for the k8s auth request."
+    },
+    {
+      "key": "k8s_auth_config_name",
+      "value": "",
+      "description": "Kubernetes auth config name defined on the Gateway, for the k8s auth request."
+    },
+    {
+      "key": "gateway_url",
+      "value": "",
+      "description": "Akeyless Gateway URL that validates k8s/oidc/saml/oauth2 auth, for example https://your-gateway-host:8000."
     }
   ]
 }
